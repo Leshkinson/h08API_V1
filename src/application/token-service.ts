@@ -33,11 +33,23 @@ export class TokenService {
         return jwt.sign(payload, this.secretRefresh, this.optionsRefresh);
     }
 
-    getPayloadByAccessToken(token: string): string | JwtPayload | JWT {
+    getPayloadByAccessToken(token: string): string | JwtPayload | JWT | boolean {
+        const {exp} = jwt.decode(token) as JwtPayload
+        if (!exp) return false
+        if (Date.now() >= exp * 1000) {
+            return false
+        }
+
         return jwt.verify(token, settings.JWT_ACCESS_SECRET)
+
     }
 
-    getPayloadByRefreshToken(token: string): string | JwtPayload | JWT {
+    getPayloadByRefreshToken(token: string): string | JwtPayload | JWT | boolean {
+        const {exp} = jwt.decode(token) as JwtPayload
+        if (!exp) return false
+        if (Date.now() >= exp * 1000) {
+            return false
+        }
         return jwt.verify(token, settings.JWT_REFRESH_SECRET)
     }
 }
