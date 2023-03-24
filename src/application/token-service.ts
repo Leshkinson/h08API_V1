@@ -2,27 +2,42 @@ import jwt, {JwtPayload, Secret, SignOptions} from "jsonwebtoken";
 
 const settings = {
     JWT_ACCESS_SECRET: "superpupersecret",
-    TOKEN_LIVE_TIME: {expiresIn: "14h"}
+    JWT_REFRESH_SECRET: "superpupermegasecret",
+    TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10s"},
+    TOKEN_REFRESH_LIVE_TIME: {expiresIn: "20s"},
 }
 export interface JWT extends JwtPayload {
     id: string;
+    email: string;
 }
 
 export class TokenService {
-    private readonly secret: Secret;
-    private readonly options: SignOptions;
-    
+    private readonly secretAccess: Secret;
+    private readonly optionsAccess: SignOptions;
+    private readonly secretRefresh: Secret;
+    private readonly optionsRefresh: SignOptions;
+
     
     constructor() {
-        this.options = settings.TOKEN_LIVE_TIME;
-        this.secret = settings.JWT_ACCESS_SECRET;
+        this.optionsAccess = settings.TOKEN_ACCESS_LIVE_TIME;
+        this.secretAccess = settings.JWT_ACCESS_SECRET;
+        this.optionsRefresh = settings.TOKEN_REFRESH_LIVE_TIME;
+        this.secretRefresh = settings.JWT_REFRESH_SECRET;
     }
 
-    generateToken(payload: object): string {
-        return jwt.sign(payload, this.secret, this.options);
+    generateAccessToken(payload: object): string {
+        return jwt.sign(payload, this.secretAccess, this.optionsAccess);
     }
 
-    getUserIdByToken(token: string): string | JwtPayload | JWT {
+    generateRefreshToken(payload: object):string {
+        return jwt.sign(payload, this.secretRefresh, this.optionsRefresh);
+    }
+
+    getPayloadByAccessToken(token: string): string | JwtPayload | JWT {
         return jwt.verify(token, settings.JWT_ACCESS_SECRET)
+    }
+
+    getPayloadByRefreshToken(token: string): string | JwtPayload | JWT {
+        return jwt.verify(token, settings.JWT_REFRESH_SECRET)
     }
 }

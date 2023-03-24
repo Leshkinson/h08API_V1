@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import * as dotenv from 'dotenv';
 import bodyParser from "body-parser";
 import {router} from "./router/router";
+import cookieParser from "cookie-parser";
 import {serverConfigService} from "./config/config.service";
 
 dotenv.config()
@@ -10,6 +11,7 @@ dotenv.config()
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use('/', router);
 
 const start = async (): Promise<void> => {

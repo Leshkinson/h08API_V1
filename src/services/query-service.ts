@@ -44,6 +44,10 @@ export class QueryService {
         return await this.userRepository.findUserById(id);
     }
 
+    public async findUserByEmail(email: string): Promise<IUser | undefined | null> {
+        return await this.userRepository.findUserByEmail(email)
+    }
+
     public async getTotalCountForBlogs(searchNameTerm: string | undefined | object): Promise<number> {
         if (searchNameTerm)
             searchNameTerm = {name: {$regex: new RegExp(`.*${searchNameTerm}.*`, 'i')}};
@@ -105,7 +109,7 @@ export class QueryService {
         const commentRepository = new CommentsRepository()
         const post = await this.findPost(postId)
         if (post) {
-            const payload = await tokenService.getUserIdByToken(token) as JWT
+            const payload = await tokenService.getPayloadByAccessToken(token) as JWT
             const user = await queryService.findUser(payload.id)
             if (user) {
                 return await commentRepository.createComment(content, postId, payload.id, user.login)

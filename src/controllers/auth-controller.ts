@@ -5,6 +5,8 @@ import {TokenMapper} from "../dto/mappers/token-mapper";
 import {JWT, TokenService} from "../application/token-service";
 
 export class AuthController {
+
+
     static async login(req: Request, res: Response) {
         try {
             const userService = new UserService();
@@ -14,10 +16,72 @@ export class AuthController {
             const user = await userService.verifyUser(loginOrEmail, password);
 
             if (user && user.isConfirmed) {
-                const token = tokenService.generateToken(TokenMapper.prepareModel(user))
+                const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
+                const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
+                res.cookie('jwt', refreshToken, {
+                        httpOnly: true,
+                        secure: true,
+                        maxAge: 24 * 60 * 60 * 1000
+                    }
+                );
 
                 res.status(200).json({
-                    "accessToken": token
+                    "accessToken": accessToken
+                })
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.sendStatus(401);
+                console.log(error.message);
+            }
+        }
+    }
+
+    static async logout(req: Request, res: Response) {
+        try {
+            const tokenService = new TokenService();
+            const queryService = new QueryService();
+
+            const {jwt} = req.cookies
+            if (!jwt) throw new Error
+            const payload = await tokenService.getPayloadByRefreshToken(jwt) as JWT
+            if (!payload) throw new Error
+            const user = await queryService.findUserByEmail(payload.email)
+            if (user) {
+                res.clearCookie('jwt');
+                res.sendStatus(200);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.sendStatus(401);
+                console.log(error.message);
+            }
+        }
+    }
+
+    static async updatePairTokens(req: Request, res: Response) {
+        try {
+            const tokenService = new TokenService();
+            const queryService = new QueryService();
+
+            const {jwt} = req.cookies
+            if (!jwt) throw new Error
+            const payload = await tokenService.getPayloadByRefreshToken(jwt) as JWT
+            if (!payload) throw new Error
+            const user = await queryService.findUserByEmail(payload.email)
+            if (user) {
+                res.clearCookie('jwt');
+                const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
+                const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
+                res.cookie('jwt', refreshToken, {
+                        httpOnly: true,
+                        secure: true,
+                        maxAge: 24 * 60 * 60 * 1000
+                    }
+                );
+
+                res.status(200).json({
+                    "accessToken": accessToken
                 })
             }
         } catch (error) {
@@ -34,7 +98,7 @@ export class AuthController {
             const queryService = new QueryService();
             const token: string | undefined = req.headers.authorization?.split(' ')[1];
             if (token) {
-                const payload = await tokenService.getUserIdByToken(token) as JWT
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
                 const user = await queryService.findUser(payload.id)
                 res.status(200).json({
                     "email": user?.email,
@@ -82,7 +146,7 @@ export class AuthController {
     static async resendConfirm(req: Request, res: Response) {
         try {
             const userService = new UserService();
-            const{email} = req.body
+            const {email} = req.body
             await userService.resendConfirmByUser(email)
             res.sendStatus(204)
         } catch (error) {
