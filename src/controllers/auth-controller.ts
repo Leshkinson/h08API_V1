@@ -48,7 +48,7 @@ export class AuthController {
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
                 res.clearCookie('refreshToken');
-                res.sendStatus(200);
+                res.sendStatus(204);
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -64,15 +64,15 @@ export class AuthController {
             const queryService = new QueryService();
 
             const {refreshToken} = req.cookies
-            console.log(req.cookies)
             if (!refreshToken) throw new Error
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
-                res.clearCookie('refreshToken');
+
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
+                res.clearCookie('refreshToken');
                 res.cookie('refreshToken', refreshToken, {
                         httpOnly: true,
                         secure: true,
