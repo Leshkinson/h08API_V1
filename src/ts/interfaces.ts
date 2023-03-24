@@ -34,3 +34,8 @@ export interface IComment {
         userLogin: string,
     }
 }
+
+export interface IToken {
+    _id: mongoose.Schema.Types.ObjectId;
+    token: string
+}
