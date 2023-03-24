@@ -43,6 +43,8 @@ export class AuthController {
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error
+            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
+            if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
             console.log(payload)
@@ -66,14 +68,13 @@ export class AuthController {
             const queryService = new QueryService();
 
             const {refreshToken} = req.cookies
+            if (!refreshToken) throw new Error;
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
             if (isBlockedToken) throw new Error;
-            if (!refreshToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
-
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
                 res.clearCookie('refreshToken');
@@ -83,7 +84,6 @@ export class AuthController {
                         // maxAge: 24 * 60 * 60 * 1000
                     }
                 );
-
                 res.status(200).json({
                     "accessToken": accessToken
                 })
