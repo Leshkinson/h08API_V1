@@ -15,7 +15,7 @@ export class CommentController {
             const {content} = req.body;
             const token = req.headers.authorization?.split(' ')[1]
             if (token) {
-                const payload = await tokenService.getUserIdByToken(token) as JWT
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
                 const user = await queryService.findUser(payload.id);
                 const comment: IComment | undefined = await commentService.getOne(commentId);
                 if (!user || !comment) {
@@ -53,7 +53,7 @@ export class CommentController {
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
             if (token) {
-                const payload = await tokenService.getUserIdByToken(token) as JWT
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
                 const user = await queryService.findUser(payload.id);
 
                 if (!user) {

@@ -26,7 +26,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
     const tokenService = new TokenService()
     const queryService = new QueryService()
-    const payload: string | JwtPayload | JWT = await tokenService.getUserIdByToken(token) as JWT
+    const payload: string | JwtPayload | JWT = await tokenService.getPayloadByAccessToken(token) as JWT
     if (!payload) {
         res.sendStatus(401)
 
