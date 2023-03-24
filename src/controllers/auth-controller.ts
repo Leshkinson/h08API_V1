@@ -43,6 +43,7 @@ export class AuthController {
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error
+            console.log('refresh',refreshToken)
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
@@ -69,7 +70,9 @@ export class AuthController {
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error;
+            console.log('refresh',refreshToken)
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
+            console.log('isBlockedToken', isBlockedToken)
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error

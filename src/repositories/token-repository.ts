@@ -1,6 +1,6 @@
 import {IToken} from "../ts/interfaces";
 import {TokenModel} from "../models/token-model";
-import {Model, RefType, SortOrder} from "mongoose";
+import {Model} from "mongoose";
 
 export class TokenRepository {
     private tokenModel: Model<IToken>
@@ -10,7 +10,7 @@ export class TokenRepository {
     }
 
     public async createToken(token: string): Promise<IToken> {
-        return this.tokenModel.create(token)
+        return this.tokenModel.create({token})
     }
 
     public async findToken(token: string): Promise<IToken | null> {
