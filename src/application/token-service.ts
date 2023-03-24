@@ -5,8 +5,8 @@ import {TokenRepository} from "../repositories/token-repository";
 const settings = {
     JWT_ACCESS_SECRET: "superpupersecret",
     JWT_REFRESH_SECRET: "superpupermegasecret",
-    TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10m"},
-    TOKEN_REFRESH_LIVE_TIME: {expiresIn: "20m"},
+    TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10s"},
+    TOKEN_REFRESH_LIVE_TIME: {expiresIn: "20s"},
 }
 
 export interface JWT extends JwtPayload {
