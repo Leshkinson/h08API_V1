@@ -75,17 +75,18 @@ export class AuthController {
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
-                const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
-                const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
+                await tokenService.addTokenToBlackList(refreshToken)
+                const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
+                const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
                 res.clearCookie('refreshToken');
-                res.cookie('refreshToken', refreshToken, {
+                res.cookie('refreshToken', newRefreshToken, {
                         httpOnly: true,
                         secure: true,
                         // maxAge: 24 * 60 * 60 * 1000
                     }
                 );
                 res.status(200).json({
-                    "accessToken": accessToken
+                    "accessToken": newAccessToken
                 })
             }
         } catch (error) {
