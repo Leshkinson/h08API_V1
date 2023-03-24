@@ -18,10 +18,10 @@ export class AuthController {
             if (user && user.isConfirmed) {
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
-                res.cookie('jwt', refreshToken, {
+                res.cookie('refreshToken', refreshToken, {
                         httpOnly: true,
                         secure: true,
-                        maxAge: 24 * 60 * 60 * 1000
+                        // maxAge: 24 * 60 * 60 * 1000
                     }
                 );
 
@@ -48,7 +48,7 @@ export class AuthController {
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
-                res.clearCookie('jwt');
+                res.clearCookie('refreshToken');
                 res.sendStatus(200);
             }
         } catch (error) {
@@ -70,13 +70,13 @@ export class AuthController {
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
-                res.clearCookie('jwt');
+                res.clearCookie('refreshToken');
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
-                res.cookie('jwt', refreshToken, {
+                res.cookie('refreshToken', refreshToken, {
                         httpOnly: true,
                         secure: true,
-                        maxAge: 24 * 60 * 60 * 1000
+                        // maxAge: 24 * 60 * 60 * 1000
                     }
                 );
 
