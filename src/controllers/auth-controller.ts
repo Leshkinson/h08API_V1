@@ -6,7 +6,6 @@ import {JWT, TokenService} from "../application/token-service";
 
 export class AuthController {
 
-
     static async login(req: Request, res: Response) {
         try {
             const userService = new UserService();
@@ -42,9 +41,9 @@ export class AuthController {
             const tokenService = new TokenService();
             const queryService = new QueryService();
 
-            const {jwt} = req.cookies
-            if (!jwt) throw new Error
-            const payload = await tokenService.getPayloadByRefreshToken(jwt) as JWT
+            const {refreshToken} = req.cookies
+            if (!refreshToken) throw new Error
+            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
@@ -64,9 +63,10 @@ export class AuthController {
             const tokenService = new TokenService();
             const queryService = new QueryService();
 
-            const {jwt} = req.cookies
-            if (!jwt) throw new Error
-            const payload = await tokenService.getPayloadByRefreshToken(jwt) as JWT
+            const {refreshToken} = req.cookies
+            console.log(req.cookies)
+            if (!refreshToken) throw new Error
+            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
