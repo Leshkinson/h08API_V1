@@ -63,7 +63,9 @@ export class TokenService {
     }
 
     public async checkTokenByBlackList(token: string): Promise<boolean> {
+        console.log('Input Token', token)
         const checkToken = await this.tokenRepository.findToken(token)
+        console.log('checkToken', checkToken)
         return !!checkToken;
     }
 }

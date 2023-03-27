@@ -14,6 +14,6 @@ export class TokenRepository {
     }
 
     public async findToken(token: string): Promise<IToken | null> {
-        return this.tokenModel.findOne({"token": token})
+        return this.tokenModel.findOne({"refreshToken": token})
     }
 }
