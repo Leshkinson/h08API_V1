@@ -24,7 +24,7 @@ export class AuthController {
                     }
                 );
 
-                res.status(200).json({
+                res.sendStatus(200).json({
                     "accessToken": accessToken
                 })
             }
