@@ -82,7 +82,7 @@ export class AuthController {
                 await tokenService.addTokenToBlackList(refreshToken)
                 const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
-                res.clearCookie('refreshToken');
+                //res.clearCookie('refreshToken');
                 res.cookie('refreshToken', newRefreshToken, {
                         httpOnly: true,
                         secure: true,
