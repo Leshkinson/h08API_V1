@@ -43,12 +43,13 @@ export class AuthController {
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error
-            console.log('refresh',refreshToken)
+            //console.log('refresh',refreshToken)
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
+            console.log('isBlockedToken', isBlockedToken)
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
+            console.log('Payload', payload)
             if (!payload) throw new Error
-            console.log(payload)
             const user = await queryService.findUserByEmail(payload.email)
             if (user) {
                 await tokenService.addTokenToBlackList(refreshToken)
