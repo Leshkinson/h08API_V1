@@ -40,17 +40,13 @@ export class AuthController {
         try {
             const tokenService = new TokenService();
             const queryService = new QueryService();
-
-            const {refreshToken} = req.cookies
-            if (!refreshToken) throw new Error
-            //console.log('refresh',refreshToken)
-            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
-            console.log('isBlockedToken', isBlockedToken)
+            const {refreshToken} = req.cookies;
+            if (!refreshToken) throw new Error;
+            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken);
             if (isBlockedToken) throw new Error;
-            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
-            console.log('Payload', payload)
-            if (!payload) throw new Error
-            const user = await queryService.findUserByEmail(payload.email)
+            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
+            if (!payload) throw new Error;
+            const user = await queryService.findUserByEmail(payload.email);
             if (user) {
                 await tokenService.addTokenToBlackList(refreshToken)
                 res.clearCookie('refreshToken');
@@ -71,9 +67,7 @@ export class AuthController {
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error;
-            console.log('refresh',refreshToken)
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
-            console.log('isBlockedToken', isBlockedToken)
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
@@ -82,7 +76,6 @@ export class AuthController {
                 await tokenService.addTokenToBlackList(refreshToken)
                 const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user))
-                //res.clearCookie('refreshToken');
                 res.cookie('refreshToken', newRefreshToken, {
                         httpOnly: true,
                         secure: true,
